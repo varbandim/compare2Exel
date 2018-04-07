@@ -16,7 +16,8 @@ public class Parser {
         InputStream in2 = null;
         HSSFWorkbook wbFirstFile = null;
         HSSFWorkbook wbSecondFileFile = null;
-        int workCol = 0;
+        int indxInFst = 0;
+        int countOfTrue = 0;
 
         try {
             in1 = new FileInputStream(name1);
@@ -44,28 +45,55 @@ public class Parser {
             if (cellType == Cell.CELL_TYPE_STRING) {
                 tmp = cell.getStringCellValue();
                 if ((tmp.compareToIgnoreCase("Номенклатура") == 0) /*добавить сравнение на "Товар"*/) {
-                    workCol = cell.getColumnIndex();
+                    indxInFst = cell.getColumnIndex();
                 }
             }
         }
-        for (int i = ++rowFirst; i < rowLast; i++) {
-            Row row = sheet1.getRow(i);
-            Cell cell = row.getCell(workCol);
-            stringFirstFile = cell.getStringCellValue().split("\\s+");
-            //открываем второй файл и читаем строки, ищем столбец "Номенклатура"
-        }
 
-        //Прочитать строку из рабочей колонки и разбить на слова
-            //тестовый вывод
-            for (String s :
-                    stringFirstFile) {
-                System.out.println(s);
+        //то же самое со вторым файлом - находим индекс колонки "Номенклатура"
+        int fstInScndFile = sheet2.getFirstRowNum();
+        int endInScndFile = sheet2.getLastRowNum();
+        int indxInScnd = 0;
+        Row firstRowInScnd = sheet2.getRow(fstInScndFile);
+        short minColInScnd = firstRowInScnd.getFirstCellNum();
+        short maxColInScnd = firstRowInScnd.getLastCellNum();
+        for (int k = minColInScnd; k < maxColInScnd; k++) {
+            Cell cell2 = firstRowInScnd.getCell(k);
+            int cell2Type = cell2.getCellType();
+            if (cell2Type == Cell.CELL_TYPE_STRING) {
+                tmp = cell2.getStringCellValue();
+                if ((tmp.compareToIgnoreCase("Номенклатура") == 0)/*добавить сравнение на "Товар"*/) {
+                    indxInScnd = cell2.getColumnIndex();
+                }
             }
         }
 
+        for (int i = ++rowFirst; i < rowLast; i++) {
+            Row row1 = sheet1.getRow(i);
+            Cell cell1 = row1.getCell(indxInFst);
+            stringFirstFile = cell1.getStringCellValue().split("\\s+");
+            //открываем второй файл и читаем строки, ищем столбец "Номенклатура"
+            for (int j = ++fstInScndFile; j < endInScndFile; j++) {
+                Row row2 = sheet2.getRow(j);
+                Cell cell2 = row2.getCell(indxInScnd);
+                stringSecondFile = cell2.getStringCellValue().split("\\s+");
+            }
 
+            //сравнить содержимое первого строкового массива со вторым, если совпадения = длина меньшего массива -1, то строки соответствуют.
 
+        }
 
-        return "";
+        //Прочитать строку из рабочей колонки и разбить на слова
+        //тестовый вывод
+        for (String s :
+                stringFirstFile) {
+            System.out.println(s);
+        }
     }
+
+
+
+
+        return"";
+}
 }
