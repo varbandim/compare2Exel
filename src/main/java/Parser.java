@@ -19,6 +19,9 @@ public class Parser {
         int indxTovInFst = 0;
         int indxPriceInFst = 0;
         int countOfTrue = 0;
+        int strFFLength = 0;
+        int strSFLength = 0;
+        boolean flag = false;
 
         try {
             in1 = new FileInputStream(name1);
@@ -88,26 +91,42 @@ public class Parser {
 
         for (int i = ++rowFirst; i < rowLast; i++) {
             Row row1 = sheet1.getRow(i);
-            Cell cell1 = row1.getCell(indxTovInFst);
+            Cell cell1 = row1.getCell(indxTovInFst);//читаем содержимое ячейки
             stringFirstFile = cell1.getStringCellValue().split("\\s+");
-            for (int j = ++fstInScndFile; j < endInScndFile; j++) {
+            strFFLength = stringFirstFile.length;
+            for (int j = ++fstInScndFile; j < endInScndFile; j++) {//для всех ячеек Номенклатура во втором файле ищем совпадения
                 Row row2 = sheet2.getRow(j);
                 Cell cell2 = row2.getCell(indxTovInScnd);
                 stringSecondFile = cell2.getStringCellValue().split("\\s+");
                 //сравнить содержимое первого строкового массива со вторым, если совпадения = длина меньшего массива -1, то строки соответствуют.
+                strSFLength = stringSecondFile.length;
+                if (strFFLength < strSFLength) {
+                    for (int k = 0; k < strFFLength; k++) {
+                        for (int l = 0; l < strSFLength; l++) {
+                            if (stringFirstFile[k].equals(stringSecondFile[l])) {
+                                countOfTrue++;
+                            }
+                        }
+                    }
+                    if ((strFFLength - countOfTrue) <= 1) flag = true;
+                } else if (strSFLength <= strFFLength) {
+                    for (int k = 0; k < strSFLength; k++) {
+                        for (int l = 0; l < strFFLength; l++) {
+                            if (stringSecondFile[k].equals(stringFirstFile[l])) {
+                                countOfTrue++;
+                            }
+                        }
+                    }
+                    if ((strSFLength - countOfTrue) <= 1) flag = true;
+                }
+                //нашёл совпрадение, вычисляю разницу цены
+                if (flag) {
+                    
+                }
             }
-
-
         }
-
-        //Прочитать строку из рабочей колонки и разбить на слова
         //тестовый вывод
-        for (String s :
-                stringFirstFile) {
-            System.out.println(s);
-        }
-
-
+        System.out.println(flag);
         return "";
     }
 }
