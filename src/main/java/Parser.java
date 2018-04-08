@@ -16,7 +16,8 @@ public class Parser {
         InputStream in2 = null;
         HSSFWorkbook wbFirstFile = null;
         HSSFWorkbook wbSecondFileFile = null;
-        int indxInFst = 0;
+        int indxTovInFst = 0;
+        int indxPriceInFst = 0;
         int countOfTrue = 0;
 
         try {
@@ -44,16 +45,25 @@ public class Parser {
             int cellType = cell.getCellType();
             if (cellType == Cell.CELL_TYPE_STRING) {
                 tmp = cell.getStringCellValue();
-                if ((tmp.compareToIgnoreCase("Номенклатура") == 0) /*добавить сравнение на "Товар"*/) {
-                    indxInFst = cell.getColumnIndex();
+                switch (tmp) {
+                    case "Номенклатура":
+                        indxTovInFst = cell.getColumnIndex();
+                        break;
+                    case "Цена":
+                        indxPriceInFst = cell.getColumnIndex();
+                        break;
                 }
+//                if ((tmp.compareToIgnoreCase("Номенклатура") == 0) /*добавить сравнение на "Товар"*/) {
+//                    indxTovInFst = cell.getColumnIndex();
+//                }
             }
         }
 
         //то же самое со вторым файлом - находим индекс колонки "Номенклатура"
         int fstInScndFile = sheet2.getFirstRowNum();
         int endInScndFile = sheet2.getLastRowNum();
-        int indxInScnd = 0;
+        int indxTovInScnd = 0;
+        int indxPriceInSecond = 0;
         Row firstRowInScnd = sheet2.getRow(fstInScndFile);
         short minColInScnd = firstRowInScnd.getFirstCellNum();
         short maxColInScnd = firstRowInScnd.getLastCellNum();
@@ -62,24 +72,31 @@ public class Parser {
             int cell2Type = cell2.getCellType();
             if (cell2Type == Cell.CELL_TYPE_STRING) {
                 tmp = cell2.getStringCellValue();
-                if ((tmp.compareToIgnoreCase("Номенклатура") == 0)/*добавить сравнение на "Товар"*/) {
-                    indxInScnd = cell2.getColumnIndex();
+                switch (tmp) {
+                    case "Номенклатура":
+                        indxTovInScnd = cell2.getColumnIndex();
+                        break;
+                    case "Цена":
+                        indxPriceInSecond = cell2.getColumnIndex();
+                        break;
                 }
+//                if ((tmp.compareToIgnoreCase("Номенклатура") == 0)/*добавить сравнение на "Товар"*/) {
+//                    indxTovInScnd = cell2.getColumnIndex();
+//                }
             }
         }
 
         for (int i = ++rowFirst; i < rowLast; i++) {
             Row row1 = sheet1.getRow(i);
-            Cell cell1 = row1.getCell(indxInFst);
+            Cell cell1 = row1.getCell(indxTovInFst);
             stringFirstFile = cell1.getStringCellValue().split("\\s+");
-            //открываем второй файл и читаем строки, ищем столбец "Номенклатура"
             for (int j = ++fstInScndFile; j < endInScndFile; j++) {
                 Row row2 = sheet2.getRow(j);
-                Cell cell2 = row2.getCell(indxInScnd);
+                Cell cell2 = row2.getCell(indxTovInScnd);
                 stringSecondFile = cell2.getStringCellValue().split("\\s+");
+                //сравнить содержимое первого строкового массива со вторым, если совпадения = длина меньшего массива -1, то строки соответствуют.
             }
 
-            //сравнить содержимое первого строкового массива со вторым, если совпадения = длина меньшего массива -1, то строки соответствуют.
 
         }
 
@@ -89,11 +106,8 @@ public class Parser {
                 stringFirstFile) {
             System.out.println(s);
         }
+
+
+        return "";
     }
-
-
-
-
-        return"";
-}
 }
